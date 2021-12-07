@@ -2,14 +2,15 @@ import kotlin.math.abs
 
 fun main() {
 
+    fun isDiagonal(it: List<Pair<Int, Int>>) = abs(it[0].first - it[1].first) == abs(it[0].second - it[1].second)
+
     fun part1(input: List<String>): Int {
         return input
             .map { it.split(" -> ") }
             .map { it.map { it.split(",").map { it.toInt() } }.map { Pair(it[0], it[1]) } }
             .filter { it[0].first == it[1].first || it[0].second == it[1].second }
             .flatMap {
-                it[0].first.toward(it[1].first)
-                    .map { x -> it[0].second.toward(it[1].second).map { Pair(x, it) } }.flatten()
+                it[0].first.toward(it[1].first).map { x -> it[0].second.toward(it[1].second).map { Pair(x, it) } }.flatten()
             }
             .groupingBy { it }
             .eachCount()
@@ -18,17 +19,14 @@ fun main() {
 
     }
 
+
     fun part2(input: List<String>): Int {
         return input
             .map { it.split(" -> ") }
             .map { it.map { it.split(",").map { it.toInt() } }.map { Pair(it[0], it[1]) } }
-            .filter {
-                it[0].first == it[1].first || it[0].second == it[1].second || abs(it[0].first - it[1].first) == abs(
-                    it[0].second - it[1].second
-                )
-            }
+            .filter { it[0].first == it[1].first || it[0].second == it[1].second || isDiagonal(it) }
             .flatMap {
-                if (abs(it[0].first - it[1].first) == abs(it[0].second - it[1].second)) {
+                if (isDiagonal(it)) {
                     it[0].first.toward(it[1].first).zip(it[0].second.toward(it[1].second))
                 } else {
                     it[0].first.toward(it[1].first)
